@@ -1,5 +1,5 @@
 /*
- * AWSuite: http://forzefield.com
+ * AWSecureDistribution: http://forzefield.com
  *
  * Copyright (c) 2010 ForzeField Studios S.L.
  *
