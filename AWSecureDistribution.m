@@ -23,41 +23,54 @@
  *
  */
 
+#define KAWSECURE_UUID_N_CHARS 36
+#define SECURE_KEY b1sk6
+#import <string.h>
+
 #import "AWSecureDistribution.h"
 
-@implementation AWSecureDistribution
-
-+ (NSString*) getHardwareUUID
+const char* getHardwareUUID()
 {
-	NSString *uuid = nil;
-
-	io_service_t platformExpert = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
-	if (platformExpert)
+	io_service_t platformExpert  = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
+	
+	if (!platformExpert)
+        return NULL;
+	
+	const CFTypeRef snCFString = IORegistryEntryCreateCFProperty(platformExpert, CFSTR(kIOPlatformUUIDKey), kCFAllocatorDefault, 0);
+	
+	if(snCFString)
 	{
-		CFTypeRef snCFString = IORegistryEntryCreateCFProperty(platformExpert, CFSTR(kIOPlatformUUIDKey), kCFAllocatorDefault, 0);
-
-		if(snCFString)
-			uuid = [(NSString*)CFXMLCreateStringByUnescapingEntities(NULL, snCFString, NULL) autorelease];
-
-		IOObjectRelease(platformExpert);
+		const char *serialBuff = CFStringGetCStringPtr(snCFString, kCFStringEncodingMacRoman);
+		if(serialBuff)
+			return serialBuff;		
+		
+		CFRelease(snCFString);
 	}
-	return uuid;
+	IOObjectRelease(platformExpert);
+	return NULL;
 }
 
-+ (BOOL) checkAccepted:(NSArray*)availableSystems
+BOOL awSecureCheckAccepted(char **devices)
 {
-	NSString *serial = [AWSecureDistribution getHardwareUUID];
-	if(serial==nil)
-	{
-		NSLog(@"Error getting serial number");
-		return NO;
-	}
+	const char *serial = getHardwareUUID();
 	
-	for(NSString *string in availableSystems)
-		if([serial isEqualToString:string])
+	if(serial==NULL)
+		return NO;
+	
+	if(strlen(serial) != KAWSECURE_UUID_N_CHARS)
+		return NO;
+		
+	int i = 0;
+	while (YES)
+	{
+		if(devices[i] == NULL)
+			return NO;
+	
+		if(strcmp(serial, devices[i]) == 0)
 			return YES;
+		
+		i++;
+	}
 	
 	return NO;
 }
-
-@end

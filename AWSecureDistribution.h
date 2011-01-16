@@ -25,9 +25,4 @@
 
 #import <IOKit/IOKitLib.h>
 
-@interface AWSecureDistribution : NSObject
-
-+ (NSString*) getHardwareUUID;
-+ (BOOL) checkAccepted:(NSArray*)availableSystems;
-
-@end
+extern BOOL awSecureCheckAccepted(char **devices);
