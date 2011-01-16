@@ -27,26 +27,26 @@
 
 @implementation AWSecureDistribution
 
-+ (NSString*) getSystemSerialNumber
++ (NSString*) getHardwareUUID
 {
-	NSString *serialNumber = nil;
+	NSString *uuid = nil;
 
 	io_service_t platformExpert = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
 	if (platformExpert)
 	{
-		CFTypeRef snCFString = IORegistryEntryCreateCFProperty(platformExpert, CFSTR(kIOPlatformSerialNumberKey), kCFAllocatorDefault, 0);
+		CFTypeRef snCFString = IORegistryEntryCreateCFProperty(platformExpert, CFSTR(kIOPlatformUUIDKey), kCFAllocatorDefault, 0);
 
 		if(snCFString)
-			serialNumber = [(NSString*)CFXMLCreateStringByUnescapingEntities(NULL, snCFString, NULL) autorelease];
+			uuid = [(NSString*)CFXMLCreateStringByUnescapingEntities(NULL, snCFString, NULL) autorelease];
 
 		IOObjectRelease(platformExpert);
 	}
-	return serialNumber;
+	return uuid;
 }
 
 + (BOOL) checkAccepted:(NSArray*)availableSystems
 {
-	NSString *serial = [AWSecureDistribution getSystemSerialNumber];
+	NSString *serial = [AWSecureDistribution getHardwareUUID];
 	if(serial==nil)
 	{
 		NSLog(@"Error getting serial number");

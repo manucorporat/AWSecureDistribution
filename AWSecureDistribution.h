@@ -27,7 +27,7 @@
 
 @interface AWSecureDistribution : NSObject
 
-+ (NSString*) getSystemSerialNumber;
++ (NSString*) getHardwareUUID;
 + (BOOL) checkAccepted:(NSArray*)availableSystems;
 
 @end
