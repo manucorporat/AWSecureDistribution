@@ -59,12 +59,11 @@ BOOL AW_CONCAT(awsc, KAW_SECURE_KEY)(const char **devices, const unsigned int nu
 		{
 			for(int i = 0; i<nuDevices; i++)
 			{
-				char *device = (char*)devices[i];
-				if(device != NULL)
+				if(devices[i] != NULL)
 				{
-					if(strlen(device) == KAWSECURE_UUID_N_CHARS)
+					if(strlen(devices[i]) == KAWSECURE_UUID_N_CHARS)
 					{
-						if(strcmp(serial, device) == 0)
+						if(strcmp(serial, devices[i]) == 0)
 							return YES;
 								
 					}
