@@ -24,7 +24,6 @@
  */
 
 #define KAWSECURE_UUID_N_CHARS 36
-#define KAWS_FUNC_UUID AWSU ## KAW_SECURE_KEY
 
 #import <string.h>
 #import "AWSecureDistribution.h"
