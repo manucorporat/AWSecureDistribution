@@ -24,8 +24,10 @@
  */
 
 #define KAWSECURE_UUID_N_CHARS 36
+#define KAWSECURE_MD5 32
 
 #import <string.h>
+#import "md5/md5.h"
 #import "AWSecureDistribution.h"
 
 const char* AW_CONCAT(awsu, KAW_SECURE_KEY)()
@@ -49,13 +51,14 @@ const char* AW_CONCAT(awsu, KAW_SECURE_KEY)()
 	return NULL;
 }
 
+
 BOOL AW_CONCAT(awsc, KAW_SECURE_KEY)(const char **devices, const unsigned int nuDevices)
 {
-	const char *serial = AW_CONCAT(awsu, KAW_SECURE_KEY)();
+	const char *uuid = AW_CONCAT(awsu, KAW_SECURE_KEY)();
 	
-	if(serial!=NULL)
+	if(uuid != NULL)
 	{
-		if(strlen(serial) == KAWSECURE_UUID_N_CHARS)
+		if(strlen(uuid) == KAWSECURE_UUID_N_CHARS)
 		{
 			for(int i = 0; i<nuDevices; i++)
 			{
@@ -63,9 +66,49 @@ BOOL AW_CONCAT(awsc, KAW_SECURE_KEY)(const char **devices, const unsigned int nu
 				{
 					if(strlen(devices[i]) == KAWSECURE_UUID_N_CHARS)
 					{
-						if(strcmp(serial, devices[i]) == 0)
+						if(strcmp(uuid, devices[i]) == 0)
 							return YES;
 								
+					}
+				}else break;
+			}
+		}
+	}
+	return NO;
+}
+
+
+BOOL AW_CONCAT(awscMd5, KAW_SECURE_KEY)(const char **devices, const unsigned int nuDevices)
+{
+	const char *uuid = AW_CONCAT(awsu, KAW_SECURE_KEY)();
+	
+	if(uuid != NULL)
+	{
+		if(strlen(uuid) == KAWSECURE_UUID_N_CHARS)
+		{
+			// Encrypt local UUID
+			md5_state_t md5State;
+			md5_byte_t digest[16];
+
+			md5_init(&md5State);
+			md5_append(&md5State, (const md5_byte_t *)uuid, KAWSECURE_UUID_N_CHARS);
+			md5_finish(&md5State, digest);
+			
+			// Convert to HEX
+			char uuidMD5[KAWSECURE_MD5 + 1];
+			for (int i = 0; i < 16; i++)
+				sprintf(uuidMD5 + i * 2, "%02x", digest[i]);
+					
+			// Compare
+			for(int i = 0; i<nuDevices; i++)
+			{
+				if(devices[i] != NULL)
+				{
+					if(strlen(devices[i]) == KAWSECURE_MD5)
+					{
+						if(strcmp(uuidMD5, devices[i]) == 0)
+							return YES;
+						
 					}
 				}else break;
 			}

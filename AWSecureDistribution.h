@@ -30,9 +30,19 @@
 
 /******** IMPORTANT *********/
 // Change this key to improved the security
-#define KAW_SECURE_KEY HDHGJ3UTNC3
+#define KAW_SECURE_KEY GFYCBNSA934
 
 
 
 extern BOOL AW_CONCAT(awsc, KAW_SECURE_KEY)(const char **devices,  const unsigned int nuDevices);
-#define awSecureCheckAccepted(__DEVICES__, __NUDEVICES__) AW_CONCAT(awsc, KAW_SECURE_KEY)(__DEVICES__,  __NUDEVICES__)
+#define awSecureCheck(__DEVICES__, __NUDEVICES__) AW_CONCAT(awsc, KAW_SECURE_KEY)(__DEVICES__,  __NUDEVICES__)
+
+/* This is the most secure way
+ You should store the accepted UUIDs under a MD5 encryption
+ Generate MD5 keys with this tool:
+ http://www.miraclesalad.com/webtools/md5.php
+ */
+ 
+extern BOOL AW_CONCAT(awscMd5, KAW_SECURE_KEY)(const char **devices,  const unsigned int nuDevices);
+#define awSecureCheckMD5(__DEVICES__, __NUDEVICES__) AW_CONCAT(awscMd5, KAW_SECURE_KEY)(__DEVICES__,  __NUDEVICES__)
+
