@@ -24,12 +24,12 @@
  */
 
 #define KAWSECURE_UUID_N_CHARS 36
-#define SECURE_KEY b1sk6
-#import <string.h>
+#define KAWS_FUNC_UUID AWSU ## KAW_SECURE_KEY
 
+#import <string.h>
 #import "AWSecureDistribution.h"
 
-const char* getHardwareUUID()
+const char* AW_CONCAT(awsu, KAW_SECURE_KEY)()
 {
 	io_service_t platformExpert  = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
 	
@@ -50,27 +50,28 @@ const char* getHardwareUUID()
 	return NULL;
 }
 
-BOOL awSecureCheckAccepted(char **devices)
+BOOL AW_CONCAT(awsc, KAW_SECURE_KEY)(const char **devices, const unsigned int nuDevices)
 {
-	const char *serial = getHardwareUUID();
+	const char *serial = AW_CONCAT(awsu, KAW_SECURE_KEY)();
 	
-	if(serial==NULL)
-		return NO;
-	
-	if(strlen(serial) != KAWSECURE_UUID_N_CHARS)
-		return NO;
-		
-	int i = 0;
-	while (YES)
+	if(serial!=NULL)
 	{
-		if(devices[i] == NULL)
-			return NO;
-	
-		if(strcmp(serial, devices[i]) == 0)
-			return YES;
-		
-		i++;
+		if(strlen(serial) == KAWSECURE_UUID_N_CHARS)
+		{
+			for(int i = 0; i<nuDevices; i++)
+			{
+				char *device = (char*)devices[i];
+				if(device != NULL)
+				{
+					if(strlen(device) == KAWSECURE_UUID_N_CHARS)
+					{
+						if(strcmp(serial, device) == 0)
+							return YES;
+								
+					}
+				}else break;
+			}
+		}
 	}
-	
 	return NO;
 }

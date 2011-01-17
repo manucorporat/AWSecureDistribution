@@ -25,4 +25,14 @@
 
 #import <IOKit/IOKitLib.h>
 
-extern BOOL awSecureCheckAccepted(char **devices);
+#define AW_CONCAT_AGAIN(x, y) x ## y
+#define AW_CONCAT(x,y) AW_CONCAT_AGAIN(x,y)
+
+/******** IMPORTANT *********/
+// Change this key to improved the security
+#define KAW_SECURE_KEY HDHGJ3UTNC3
+
+
+
+extern BOOL AW_CONCAT(awsc, KAW_SECURE_KEY)(const char **devices,  const unsigned int nuDevices);
+#define awSecureCheckAccepted(__DEVICES__, __NUDEVICES__) AW_CONCAT(awsc, KAW_SECURE_KEY)(__DEVICES__,  __NUDEVICES__)
